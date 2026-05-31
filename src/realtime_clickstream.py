@@ -136,8 +136,10 @@ def main() -> None:
     conversion_view = (
         events.groupBy(window(col("event_ts"), "10 minutes").alias("time_window"))
         .agg(
-            countDistinct(when(col("event_type") == "session_start", col("session_id"))).alias("sessions"),
-            countDistinct(when(col("event_type") == "purchase", col("session_id"))).alias("purchase_sessions"),
+            approx_count_distinct(when(col("event_type") == "session_start", col("session_id"))).alias("sessions"),
+            approx_count_distinct(when(col("event_type") == "purchase", col("session_id"))).alias(
+                "purchase_sessions"
+            ),
         )
         .select(
             col("time_window.start").alias("window_start"),

@@ -83,6 +83,16 @@ If this step is skipped, the Spark script will fail with a missing package error
 
 If you run into a Java or Spark compatibility error, reinstall with the version pinned in `requirements.txt` and try again.
 
+Important: this project needs a Java 17-compatible runtime for Spark. In this Codespaces workspace, Java 25 caused Spark to fail, so I used a local Java 17 install instead.
+
+If your machine already has Java 17, you can skip the next note. If not, use a Java 17 JDK before running Spark.
+
+In this workspace, the working Java path was:
+
+```bash
+$HOME/.local/jdk17/jdk-17.0.15+6
+```
+
 ## Step 2: Create Sample Clickstream Data
 
 Now we make fake shopping events.
@@ -110,6 +120,12 @@ Run this command:
 
 ```bash
 python src/realtime_clickstream.py --input data/landing --sink console
+```
+
+If your computer needs the same Java 17 override used in this workspace, run:
+
+```bash
+JAVA_HOME=$HOME/.local/jdk17/jdk-17.0.15+6 PATH=$HOME/.local/jdk17/jdk-17.0.15+6/bin:$PATH python src/realtime_clickstream.py --input data/landing --sink console
 ```
 
 What this means:
