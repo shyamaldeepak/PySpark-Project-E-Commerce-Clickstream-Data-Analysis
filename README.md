@@ -1,94 +1,237 @@
 # PySpark E-Commerce Clickstream Streaming Project
 
-This repository is a beginner-friendly PySpark project that simulates a real-time e-commerce clickstream and computes useful streaming metrics.
+This project is a very simple real-time style PySpark project for beginners.
 
-You will learn how to:
+It pretends to be a small online shop.
+People visit pages, add things to cart, and sometimes buy products.
+Spark watches the new event files and calculates useful numbers.
 
-- generate synthetic clickstream events
-- read new JSON files with Structured Streaming
-- use watermarking and window aggregations
-- calculate metrics that matter in e-commerce, such as traffic, revenue, and conversion rate
+## What You Will Learn
 
-## What It Does
+By building and running this project, you will learn:
 
-The project uses a file-based stream so you do not need Kafka or cloud services to start.
+- what a clickstream is
+- how PySpark reads data in small pieces
+- how real-time style streaming works
+- how to count visits, users, and purchases
+- how to calculate simple business metrics
 
-Pipeline:
+## Very Simple Idea
 
-1. Generate clickstream JSON batches into `data/landing`
-2. Spark watches that folder as a stream
-3. Spark computes live KPIs every few seconds
-4. Results are shown in the console or written to parquet files
+Think of it like this:
+
+1. We create fake customer activity.
+2. We save that activity into JSON files.
+3. Spark keeps checking the folder for new files.
+4. Every few seconds, Spark counts things and shows the result.
+
+So this is not a heavy production system.
+It is a safe starter project for learning.
 
 ## Project Files
 
-- `src/realtime_clickstream.py` - Structured Streaming job with windowed metrics
-- `data/generate_clickstream_data.py` - synthetic event generator
-- `requirements.txt` - PySpark dependency
+Here is what each main file does:
 
-## Setup
+- `src/realtime_clickstream.py` - the Spark program that reads the data and calculates metrics
+- `data/generate_clickstream_data.py` - creates fake clickstream data files
+- `requirements.txt` - tells Python which package to install
+- `data/` - stores generated sample data
+- `output/` - stores Spark output and checkpoints
 
-Install Python dependencies:
+## What the Data Means
+
+Each event in the data is one small action from a shopper.
+
+Examples:
+
+- `session_start` means a new shopping session began
+- `page_view` means someone looked at a page
+- `search` means someone searched for something
+- `product_view` means someone looked at a product
+- `cart_add` means someone added a product to the cart
+- `checkout` means they moved toward buying
+- `purchase` means they actually bought something
+
+Each event also has details like:
+
+- user id
+- session id
+- page name
+- product id
+- country
+- device type
+- price
+- quantity
+
+## Step 1: Install Python Dependencies
+
+Before running anything, you need PySpark installed.
+
+Open a terminal in the project folder and run:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Generate Sample Data
+If you do not know what this does:
 
-Create a few streaming batches:
+- `pip` is the Python installer
+- `install` means add a package to your computer
+- `-r requirements.txt` means install everything listed in that file
+
+## Step 2: Create Sample Clickstream Data
+
+Now we make fake shopping events.
+
+Run this command:
 
 ```bash
 python data/generate_clickstream_data.py --batches 5 --events-per-batch 50
 ```
 
-## Run the Streaming Job
+What this means:
 
-Start Spark in console mode:
+- `python` starts the Python program
+- `data/generate_clickstream_data.py` is the file that creates data
+- `--batches 5` means create 5 separate files
+- `--events-per-batch 50` means each file has 50 events
+
+After this runs, you will see JSON files appear in `data/landing`.
+
+## Step 3: Start the Spark Streaming Job
+
+Now Spark will watch the folder and read new files as they appear.
+
+Run this command:
 
 ```bash
 python src/realtime_clickstream.py --input data/landing --sink console
 ```
 
-Or write aggregated results to parquet:
+What this means:
+
+- `src/realtime_clickstream.py` is the main Spark program
+- `--input data/landing` tells Spark where to look for files
+- `--sink console` tells Spark to print results on the screen
+
+If everything is working, Spark will keep running and show metrics every few seconds.
+
+## Step 4: Watch the Output
+
+When Spark sees the data, it calculates numbers like:
+
+- how many events happened
+- how many unique users were active
+- how much revenue was made from purchases
+- how many people added items to cart
+- how many sessions turned into purchases
+- which pages were viewed most often
+
+If you are new, do not worry about every Spark term yet.
+Just remember this:
+
+- input files go in
+- Spark reads them
+- Spark counts useful things
+- output comes out
+
+## Step 5: Save Results to Files Instead of Console
+
+If you want Spark to write results into files, use parquet mode:
 
 ```bash
 python src/realtime_clickstream.py --input data/landing --sink parquet --output output/metrics
 ```
 
-## Metrics You Get
+This is useful if you want to:
 
-- events per minute
-- unique active users per minute
-- total revenue from purchase events
-- cart-to-purchase rate
-- top pages by 5-minute window
-- session conversion rate by 10-minute window
+- check results later
+- build a dashboard
+- use the data in another program
 
-## Beginner Notes
+## Step 6: Understand the Metrics
 
-If you want to practice, try these small upgrades:
+Here is what each metric means in simple words:
 
-1. Add a new event type like `wishlist_add`
-2. Group metrics by `country` or `device_type`
-3. Save results into a dashboard-friendly format
-4. Add anomaly detection for sudden traffic spikes
+- events per minute: how busy the shop is
+- unique active users per minute: how many different people were active
+- total revenue: how much money purchases made
+- cart-to-purchase rate: how often people who add items also buy them
+- top pages: which pages people visit most
+- session conversion rate: how many sessions ended in a purchase
 
-## Example Output
+These are useful because they tell you if the shop is healthy.
 
-When the stream runs, Spark prints aggregations like:
+## Step 7: What the Generator Is Doing
 
-- window start and end time
-- event counts
-- distinct users
-- revenue
-- conversion rates
+The generator is just a helper script.
 
-## Clean Up
+It does this:
 
-Generated data and outputs are stored under:
+1. Makes a fake event
+2. Gives it a time, user, session, and event type
+3. Writes it into a JSON file
+4. Repeats until the batch is full
+5. Makes more files if you asked for more batches
+
+This is why the project feels like real-time data.
+New files keep arriving, and Spark keeps reading them.
+
+## Step 8: Try It Again and Again
+
+You can run the generator more than once.
+
+If you want more data, use:
+
+```bash
+python data/generate_clickstream_data.py --batches 10 --events-per-batch 100
+```
+
+If you want smaller data for practice, use:
+
+```bash
+python data/generate_clickstream_data.py --batches 2 --events-per-batch 10
+```
+
+## Step 9: Where the Output Files Go
+
+Spark may create these folders:
+
+- `data/landing` for input files
+- `output/metrics` for saved metric files
+- `output/checkpoints` for Spark checkpoint data
+
+Checkpoint files help Spark remember where it left off.
+That way, it does not read the same file again and again.
+
+## Step 10: How to Clean Everything Up
+
+If you want a fresh start, delete the generated folders:
 
 - `data/landing`
 - `output/`
 
-You can delete those folders whenever you want a fresh run.
+Then run the generator again.
+
+## Beginner Practice Ideas
+
+Once the basic version works, try these small improvements:
+
+1. Add a new event type like `wishlist_add`
+2. Show results by country
+3. Show results by device type
+4. Save the output in a format that a dashboard can read easily
+5. Detect traffic spikes
+
+## Short Summary
+
+This project teaches real-time data basics using a simple folder of JSON files.
+
+The full loop is:
+
+1. generate data
+2. start Spark
+3. watch metrics update
+4. explore the results
+
+If you can run this project once, you already understand the core idea of a streaming pipeline.
