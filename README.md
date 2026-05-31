@@ -65,19 +65,23 @@ Each event also has details like:
 
 ## Step 1: Install Python Dependencies
 
-Before running anything, you need PySpark installed.
+Before running anything, install PySpark and the other required Python packages.
 
-Open a terminal in the project folder and run:
+Open a terminal inside this project folder and run:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-If you do not know what this does:
+If you are new, here is what that means:
 
-- `pip` is the Python installer
+- `pip` is the tool Python uses to install packages
 - `install` means add a package to your computer
-- `-r requirements.txt` means install everything listed in that file
+- `-r requirements.txt` means read the list of packages from that file and install all of them
+
+If this step is skipped, the Spark script will fail with a missing package error.
+
+If you run into a Java or Spark compatibility error, reinstall with the version pinned in `requirements.txt` and try again.
 
 ## Step 2: Create Sample Clickstream Data
 
@@ -116,7 +120,32 @@ What this means:
 
 If everything is working, Spark will keep running and show metrics every few seconds.
 
-## Step 4: Watch the Output
+## Step 4: Run It the Easy Way
+
+If you want the simplest beginner flow, use two terminal windows.
+
+Terminal 1:
+
+```bash
+pip install -r requirements.txt
+python data/generate_clickstream_data.py --batches 5 --events-per-batch 50
+```
+
+Terminal 2:
+
+```bash
+python src/realtime_clickstream.py --input data/landing --sink console
+```
+
+What happens next:
+
+1. The first terminal creates the input files.
+2. The second terminal reads those files.
+3. Spark prints live results on the screen.
+
+If you already created the data folder once, you only need to run the generator again when you want fresh events.
+
+## Step 5: Watch the Output
 
 When Spark sees the data, it calculates numbers like:
 
@@ -135,7 +164,7 @@ Just remember this:
 - Spark counts useful things
 - output comes out
 
-## Step 5: Save Results to Files Instead of Console
+## Step 6: Save Results to Files Instead of Console
 
 If you want Spark to write results into files, use parquet mode:
 
@@ -149,7 +178,7 @@ This is useful if you want to:
 - build a dashboard
 - use the data in another program
 
-## Step 6: Understand the Metrics
+## Step 7: Understand the Metrics
 
 Here is what each metric means in simple words:
 
@@ -162,7 +191,7 @@ Here is what each metric means in simple words:
 
 These are useful because they tell you if the shop is healthy.
 
-## Step 7: What the Generator Is Doing
+## Step 8: What the Generator Is Doing
 
 The generator is just a helper script.
 
@@ -177,7 +206,7 @@ It does this:
 This is why the project feels like real-time data.
 New files keep arriving, and Spark keeps reading them.
 
-## Step 8: Try It Again and Again
+## Step 9: Try It Again and Again
 
 You can run the generator more than once.
 
@@ -193,7 +222,7 @@ If you want smaller data for practice, use:
 python data/generate_clickstream_data.py --batches 2 --events-per-batch 10
 ```
 
-## Step 9: Where the Output Files Go
+## Step 10: Where the Output Files Go
 
 Spark may create these folders:
 
@@ -204,7 +233,7 @@ Spark may create these folders:
 Checkpoint files help Spark remember where it left off.
 That way, it does not read the same file again and again.
 
-## Step 10: How to Clean Everything Up
+## Step 11: How to Clean Everything Up
 
 If you want a fresh start, delete the generated folders:
 
@@ -212,6 +241,16 @@ If you want a fresh start, delete the generated folders:
 - `output/`
 
 Then run the generator again.
+
+## Troubleshooting
+
+If Spark fails to start and you see a message about `getSubject is not supported`, make sure you installed the pinned dependency with:
+
+```bash
+pip install -r requirements.txt
+```
+
+Then run the project again from a fresh terminal.
 
 ## Beginner Practice Ideas
 
