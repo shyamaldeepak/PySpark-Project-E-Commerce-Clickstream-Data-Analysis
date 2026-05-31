@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from uuid import uuid4
 
-EVENT_TYPES = ["page_view", "search", "product_view", "cart_add", "checkout", "purchase"]
+EVENT_TYPES = ["session_start", "page_view", "search", "product_view", "cart_add", "checkout", "purchase"]
 PAGES = ["home", "category", "product", "cart", "checkout", "search"]
 PRODUCTS = ["SKU-1001", "SKU-1002", "SKU-1003", "SKU-1004", "SKU-1005"]
 CATEGORIES = ["electronics", "fashion", "home", "sports"]
@@ -28,7 +28,7 @@ def parse_args() -> argparse.Namespace:
 def build_event(event_time: datetime, batch_index: int, event_index: int) -> dict:
     event_type = random.choices(
         EVENT_TYPES,
-        weights=[30, 15, 25, 12, 8, 10],
+        weights=[18, 28, 12, 20, 10, 5, 7],
         k=1,
     )[0]
     product_id = random.choice(PRODUCTS) if event_type in {"product_view", "cart_add", "checkout", "purchase"} else None
